@@ -16,6 +16,8 @@
  */
 package brut.androlib.options;
 
+import android.util.IAssetsCallback;
+
 import java.util.Collection;
 
 public class BuildOptions {
@@ -36,6 +38,7 @@ public class BuildOptions {
     public String frameworkFolderLocation = null;
     public String frameworkTag = null;
     public String aaptPath = "";
+    public IAssetsCallback assetsCallback;
 
     public int aaptVersion = 1; // default to v1
 

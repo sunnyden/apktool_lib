@@ -16,15 +16,16 @@
  */
 package brut.androlib.res.xml;
 
+import android.view.KeyEvent;
+
 import brut.util.Duo;
 import org.apache.commons.lang3.StringUtils;
 
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 public final class ResXmlEncoders {
-
+    public static final char CHAR_UNDEFINED = 0;
     public static String escapeXmlChars(String str) {
         return StringUtils.replace(StringUtils.replace(str, "&", "&amp;"), "<", "&lt;");
     }
@@ -209,7 +210,7 @@ public final class ResXmlEncoders {
 
     private static boolean isPrintableChar(char c) {
         Character.UnicodeBlock block = Character.UnicodeBlock.of(c);
-        return !Character.isISOControl(c) && c != KeyEvent.CHAR_UNDEFINED
+        return !Character.isISOControl(c) && c != CHAR_UNDEFINED
                 && block != null && block != Character.UnicodeBlock.SPECIALS;
     }
 }

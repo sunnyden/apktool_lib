@@ -957,20 +957,7 @@ final public class AndrolibResources {
         if (buildOptions.frameworkFolderLocation != null) {
             path = buildOptions.frameworkFolderLocation;
         } else {
-            File parentPath = new File(System.getProperty("user.home"));
-
-            if (OSDetection.isMacOSX()) {
-                path = parentPath.getAbsolutePath() + String.format("%1$sLibrary%1$sapktool%1$sframework", File.separatorChar);
-            } else if (OSDetection.isWindows()) {
-                path = parentPath.getAbsolutePath() + String.format("%1$sAppData%1$sLocal%1$sapktool%1$sframework", File.separatorChar);
-            } else {
-                String xdgDataFolder = System.getenv("XDG_DATA_HOME");
-                if (xdgDataFolder != null) {
-                    path = xdgDataFolder + String.format("%1$sapktool%1$sframework", File.separatorChar);
-                } else {
-                    path = parentPath.getAbsolutePath() + String.format("%1$s.local%1$sshare%1$sapktool%1$sframework", File.separatorChar);
-                }
-            }
+            throw new AndrolibException("Must specify framework location");
         }
 
         File dir = new File(path);
@@ -1025,7 +1012,7 @@ final public class AndrolibResources {
     }
 
     public InputStream getAndroidFrameworkResourcesAsStream() {
-        return Jar.class.getResourceAsStream("/brut/androlib/android-framework.jar");
+        return buildOptions.assetsCallback.getInputStream();
     }
 
     public void close() throws IOException {

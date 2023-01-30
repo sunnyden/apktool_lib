@@ -13,29 +13,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import org.apache.tools.ant.filters.*
+apply plugin: 'com.android.library'
 
-apply plugin: 'java-library'
-
-processResources {
-  from('src/main/resources/properties') {
-    include '**/*.properties'
-    into 'properties'
-    filter(ReplaceTokens, tokens: [version: project.apktool_version, gitrev: project.hash] )
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-  }
-  from('src/main/resources/') {
-    include '**/*.jar'
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-  }
-
-  includeEmptyDirs = false
+android{
+    compileSdkVersion 30
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0.0"
+    }
 }
 
 dependencies {
-    api project(':brut.j.dir')
-    api project(':brut.j.util')
-    api project(':brut.j.common')
+    api project(':apktool_lib:brut.j.dir')
+    api project(':apktool_lib:brut.j.util')
+    api project(':apktool_lib:brut.j.common')
 
     implementation depends.baksmali
     implementation depends.smali
@@ -48,4 +41,12 @@ dependencies {
 
     testImplementation depends.junit
     testImplementation depends.xmlunit
+}
+
+task wrapper(type: Wrapper){
+    gradleVersion = '7.2'
+}
+
+task prepareKotlinBuildScriptModel {
+
 }

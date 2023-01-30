@@ -16,15 +16,16 @@
  */
 package brut.androlib.res.decoder;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.util.Log;
+
 import brut.androlib.AndrolibException;
 import brut.androlib.err.CantFind9PatchChunkException;
 import brut.util.ExtDataInput;
 import org.apache.commons.io.IOUtils;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
 import java.io.ByteArrayInputStream;
 import java.io.DataInput;
 import java.io.IOException;
@@ -40,14 +41,13 @@ public class Res9patchStreamDecoder implements ResStreamDecoder {
             if (data.length == 0) {
                 return;
             }
+            Bitmap bm = BitmapFactory.decodeStream(new ByteArrayInputStream(data));
+            int w = bm.getWidth(), h = bm.getHeight();
+            Bitmap bm2 = Bitmap.createBitmap(w+2,h+2, Bitmap.Config.ARGB_8888);
 
-            BufferedImage im = ImageIO.read(new ByteArrayInputStream(data));
-            int w = im.getWidth(), h = im.getHeight();
-
-            BufferedImage im2 = new BufferedImage(w + 2, h + 2, BufferedImage.TYPE_INT_ARGB);
-            if (im.getType() == BufferedImage.TYPE_CUSTOM) {
+            if (bm.getConfig() != Bitmap.Config.ARGB_8888) {
                 //TODO: Ensure this is gray + alpha case?
-                Raster srcRaster = im.getRaster();
+                /*Raster srcRaster = im.getRaster();
                 WritableRaster dstRaster = im2.getRaster();
                 int[] gray = null, alpha = null;
                 for (int y = 0; y < im.getHeight(); y++) {
@@ -58,30 +58,31 @@ public class Res9patchStreamDecoder implements ResStreamDecoder {
                     dstRaster.setSamples(1, y + 1, w, 1, 1, gray);
                     dstRaster.setSamples(1, y + 1, w, 1, 2, gray);
                     dstRaster.setSamples(1, y + 1, w, 1, 3, alpha);
-                }
+                }*/
+                Log.e(this.getClass().getName(),"Bitmap config not supported! Config: " + bm.getConfig().name());
             } else {
-                im2.createGraphics().drawImage(im, 1, 1, w, h, null);
+                new Canvas(bm2).drawBitmap(bm,1,1,null);
             }
 
             NinePatch np = getNinePatch(data);
-            drawHLine(im2, h + 1, np.padLeft + 1, w - np.padRight);
-            drawVLine(im2, w + 1, np.padTop + 1, h - np.padBottom);
+            drawHLine(bm2, h + 1, np.padLeft + 1, w - np.padRight);
+            drawVLine(bm2, w + 1, np.padTop + 1, h - np.padBottom);
 
             int[] xDivs = np.xDivs;
             if (xDivs.length == 0) {
-                drawHLine(im2, 0, 1, w);
+                drawHLine(bm2, 0, 1, w);
             } else {
                 for (int i = 0; i < xDivs.length; i += 2) {
-                    drawHLine(im2, 0, xDivs[i] + 1, xDivs[i + 1]);
+                    drawHLine(bm2, 0, xDivs[i] + 1, xDivs[i + 1]);
                 }
             }
 
             int[] yDivs = np.yDivs;
             if (yDivs.length == 0) {
-                drawVLine(im2, 0, 1, h);
+                drawVLine(bm2, 0, 1, h);
             } else {
                 for (int i = 0; i < yDivs.length; i += 2) {
-                    drawVLine(im2, 0, yDivs[i] + 1, yDivs[i + 1]);
+                    drawVLine(bm2, 0, yDivs[i] + 1, yDivs[i + 1]);
                 }
             }
 
@@ -92,28 +93,27 @@ public class Res9patchStreamDecoder implements ResStreamDecoder {
 
                 for (int i = 0; i < oi.layoutBoundsLeft; i++) {
                     int x = 1 + i;
-                    im2.setRGB(x, h + 1, OI_COLOR);
+                    bm2.setPixel(x, h + 1,OI_COLOR);
                 }
 
                 for (int i = 0; i < oi.layoutBoundsRight; i++) {
                     int x = w - i;
-                    im2.setRGB(x, h + 1, OI_COLOR);
+                    bm2.setPixel(x, h + 1, OI_COLOR);
                 }
 
                 for (int i = 0; i < oi.layoutBoundsTop; i++) {
                     int y = 1 + i;
-                    im2.setRGB(w + 1, y, OI_COLOR);
+                    bm2.setPixel(w + 1, y, OI_COLOR);
                 }
 
                 for (int i = 0; i < oi.layoutBoundsBottom; i++) {
                     int y = h - i;
-                    im2.setRGB(w + 1, y, OI_COLOR);
+                    bm2.setPixel(w + 1, y, OI_COLOR);
                 }
             } catch (CantFind9PatchChunkException t) {
                 // This chunk might not exist
             }
-
-            ImageIO.write(im2, "png", out);
+            bm2.compress(Bitmap.CompressFormat.PNG, 100, out);
         } catch (IOException | NullPointerException ex) {
             // In my case this was triggered because a .png file was
             // containing a html document instead of an image.
@@ -153,15 +153,16 @@ public class Res9patchStreamDecoder implements ResStreamDecoder {
         }
     }
 
-    private void drawHLine(BufferedImage im, int y, int x1, int x2) {
+    private void drawHLine(Bitmap im, int y, int x1, int x2) {
         for (int x = x1; x <= x2; x++) {
-            im.setRGB(x, y, NP_COLOR);
+            im.setPixel(x, y, NP_COLOR);
         }
     }
 
-    private void drawVLine(BufferedImage im, int x, int y1, int y2) {
+    private void drawVLine(Bitmap im, int x, int y1, int y2) {
         for (int y = y1; y <= y2; y++) {
-            im.setRGB(x, y, NP_COLOR);
+            im.setPixel(x, y, NP_COLOR);
+
         }
     }
 

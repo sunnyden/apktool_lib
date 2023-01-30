@@ -16,6 +16,8 @@
  */
 package brut.androlib;
 
+import android.util.IAssetsCallback;
+
 import brut.androlib.err.InFileNotFoundException;
 import brut.androlib.err.OutDirExistsException;
 import brut.androlib.err.UndefinedResObjectException;
@@ -238,6 +240,10 @@ public class ApkDecoder {
 
     public void setFrameworkDir(String dir) {
         mAndrolib.buildOptions.frameworkFolderLocation = dir;
+    }
+
+    public void setAndroidFrameworkCallback(IAssetsCallback callback){
+        mAndrolib.buildOptions.assetsCallback = callback;
     }
 
     public ResTable getResTable() throws AndrolibException {

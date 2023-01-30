@@ -22,6 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AaptManager {
+    private static String execPath = "";
+    public static void setLibPath(String path){
+        execPath = path;
+    }
 
     public static File getAapt2() throws BrutException {
         return getAapt(2);
@@ -32,35 +36,7 @@ public class AaptManager {
     }
 
     private static File getAapt(Integer version) throws BrutException {
-        File aaptBinary;
-        String aaptVersion = getAaptBinaryName(version);
-
-        if (! OSDetection.is64Bit() && OSDetection.isMacOSX()) {
-            throw new BrutException("32 bit OS detected. No 32 bit binaries available.");
-        }
-
-        // Set the 64 bit flag
-        aaptVersion += OSDetection.is64Bit() ? "_64" : "";
-
-        try {
-            if (OSDetection.isMacOSX()) {
-                aaptBinary = Jar.getResourceAsFile("/prebuilt/macosx/" + aaptVersion, AaptManager.class);
-            } else if (OSDetection.isUnix()) {
-                aaptBinary = Jar.getResourceAsFile("/prebuilt/linux/" + aaptVersion, AaptManager.class);
-            } else if (OSDetection.isWindows()) {
-                aaptBinary = Jar.getResourceAsFile("/prebuilt/windows/" + aaptVersion + ".exe", AaptManager.class);
-            } else {
-                throw new BrutException("Could not identify platform: " + OSDetection.returnOS());
-            }
-        } catch (BrutException ex) {
-            throw new BrutException(ex);
-        }
-
-        if (aaptBinary.setExecutable(true)) {
-            return aaptBinary;
-        }
-
-        throw new BrutException("Can't set aapt binary as executable");
+        return new File(execPath+"/aapt"+version+"_exec.so");
     }
 
     public static String getAaptExecutionCommand(String aaptPath, File aapt) throws BrutException {

@@ -13,9 +13,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
+apply plugin: 'com.android.library'
+android{
+  compileSdkVersion 30
+  defaultConfig {
+    minSdkVersion 14
+    targetSdkVersion 30
+    versionCode 1
+    versionName "1.0.0"
+  }
+}
 dependencies {
-  implementation project(':brut.j.common')
-  implementation project(':brut.j.util')
+  implementation project(':apktool_lib:brut.j.common')
+  implementation project(':apktool_lib:brut.j.util')
   implementation depends.commons_io
 }
