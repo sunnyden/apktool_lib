@@ -16,6 +16,8 @@
  */
 package brut.androlib;
 
+import android.content.Context;
+
 import brut.androlib.meta.MetaInfo;
 import brut.androlib.meta.UsesFramework;
 import brut.androlib.options.BuildOptions;
@@ -50,18 +52,21 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 public class Androlib {
-    private final AndrolibResources mAndRes = new AndrolibResources();
+    private final AndrolibResources mAndRes;
     protected final ResUnknownFiles mResUnknownFiles = new ResUnknownFiles();
     public final BuildOptions buildOptions;
+    private Context context;
     private int mMinSdkVersion = 0;
 
-    public Androlib() {
-        this(new BuildOptions());
+    public Androlib(Context context) {
+        this(new BuildOptions(), context);
     }
 
-    public Androlib(BuildOptions buildOptions) {
+    public Androlib(BuildOptions buildOptions, Context context) {
         this.buildOptions = buildOptions;
+        mAndRes = new AndrolibResources(context);
         mAndRes.buildOptions = buildOptions;
+        this.context = context;
     }
 
     public ResTable getResTable(ExtFile apkFile)

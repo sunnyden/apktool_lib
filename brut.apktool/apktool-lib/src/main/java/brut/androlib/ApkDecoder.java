@@ -16,6 +16,7 @@
  */
 package brut.androlib;
 
+import android.content.Context;
 import android.util.IAssetsCallback;
 
 import brut.androlib.err.InFileNotFoundException;
@@ -41,16 +42,16 @@ import java.util.*;
 import java.util.logging.Logger;
 
 public class ApkDecoder {
-    public ApkDecoder() {
-        this(new Androlib());
+    public ApkDecoder(Context context) {
+        this(new Androlib(context));
     }
 
     public ApkDecoder(Androlib androlib) {
         mAndrolib = androlib;
     }
 
-    public ApkDecoder(File apkFile) {
-        this(apkFile, new Androlib());
+    public ApkDecoder(File apkFile, Context context) {
+        this(apkFile, new Androlib(context));
     }
 
     public ApkDecoder(File apkFile, Androlib androlib) {
@@ -240,10 +241,6 @@ public class ApkDecoder {
 
     public void setFrameworkDir(String dir) {
         mAndrolib.buildOptions.frameworkFolderLocation = dir;
-    }
-
-    public void setAndroidFrameworkCallback(IAssetsCallback callback){
-        mAndrolib.buildOptions.assetsCallback = callback;
     }
 
     public ResTable getResTable() throws AndrolibException {

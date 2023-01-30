@@ -16,6 +16,31 @@
  */
 package brut.androlib.res;
 
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.IntentSender;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.database.DatabaseErrorHandler;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.UserHandle;
+import android.view.Display;
+
 import brut.androlib.AndrolibException;
 import brut.androlib.options.BuildOptions;
 import brut.androlib.err.CantFindFrameworkResException;
@@ -1011,14 +1036,27 @@ final public class AndrolibResources {
         return buildOptions.isAapt2() ? 2 : 1;
     }
 
-    public InputStream getAndroidFrameworkResourcesAsStream() {
-        return buildOptions.assetsCallback.getInputStream();
+    public InputStream getAndroidFrameworkResourcesAsStream() throws AndrolibException {
+        try{
+            return context.getAssets().open("android-framework.jar");
+        }catch (IOException e){
+            throw new AndrolibException("Android Framework Not Found!");
+        }
     }
 
     public void close() throws IOException {
         if (mFramework != null) {
             mFramework.close();
         }
+    }
+
+    public AndrolibResources(Context context){
+        this.context = context;
+    }
+
+    public AndrolibResources(){
+        // TODO: add stub for UT
+        this.context = null;
     }
 
     public BuildOptions buildOptions;
@@ -1029,6 +1067,8 @@ final public class AndrolibResources {
     public static boolean sKeepBroken = false;
 
     private final static Logger LOGGER = Logger.getLogger(AndrolibResources.class.getName());
+
+    private Context context;
 
     private File mFrameworkDirectory = null;
 
