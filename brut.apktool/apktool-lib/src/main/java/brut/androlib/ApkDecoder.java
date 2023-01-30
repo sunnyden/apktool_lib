@@ -18,6 +18,9 @@ package brut.androlib;
 
 import android.content.Context;
 
+import brut.androlib.callback.IDecodeCallback;
+import brut.androlib.enums.DecodeState;
+import brut.androlib.enums.DecodeStep;
 import brut.androlib.err.InFileNotFoundException;
 import brut.androlib.err.OutDirExistsException;
 import brut.androlib.err.UndefinedResObjectException;
@@ -33,6 +36,8 @@ import brut.androlib.res.xml.ResXmlPatcher;
 import brut.common.BrutException;
 import brut.directory.DirectoryException;
 import brut.util.OS;
+
+import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 
 import java.io.File;
@@ -69,12 +74,17 @@ public class ApkDecoder {
         mResTable = null;
     }
 
+    public void setDecodeCallback(IDecodeCallback decodeCallback){
+        this.decodeCallback = decodeCallback;
+    }
+
     public void setOutDir(File outDir) {
         mOutDir = outDir;
     }
 
     public void decode() throws AndrolibException, IOException, DirectoryException {
         try {
+            this.updateProgress(DecodeStep.PREPARING,DecodeState.INPROGRESS,0,"Init");
             File outDir = getOutDir();
             AndrolibResources.sKeepBroken = mKeepBrokenResources;
 
@@ -92,30 +102,37 @@ public class ApkDecoder {
                 throw new AndrolibException(ex);
             }
             outDir.mkdirs();
-
+            this.updateProgress(DecodeStep.PREPARING,DecodeState.DONE,100,"Done Creating Dest Dirs");
             LOGGER.info("Using Apktool " + Androlib.getVersion() + " on " + mApkFile.getName());
-
+            this.updateProgress(DecodeStep.DECODE_RESOURCES,DecodeState.PENDING,0,"Start decode resources");
             if (hasResources()) {
                 switch (mDecodeResources) {
                     case DECODE_RESOURCES_NONE:
                         mAndrolib.decodeResourcesRaw(mApkFile, outDir);
                         if (mForceDecodeManifest == FORCE_DECODE_MANIFEST_FULL) {
                             // done after raw decoding of resources because copyToDir overwrites dest files
+                            this.updateProgress(DecodeStep.DECODE_RESOURCES,DecodeState.INPROGRESS,0,"Decoding AndroidManifest.xml with resources...");
                             if (hasManifest()) {
                                 mAndrolib.decodeManifestWithResources(mApkFile, outDir, getResTable());
                             }
+                            this.updateProgress(DecodeStep.DECODE_RESOURCES,DecodeState.DONE,0, "Decode res done");
+                        }else{
+                            this.updateProgress(DecodeStep.DECODE_RESOURCES,DecodeState.NA,0,"Not decoding res");
                         }
                         break;
                     case DECODE_RESOURCES_FULL:
+                        this.updateProgress(DecodeStep.DECODE_RESOURCES,DecodeState.INPROGRESS,0,"Decoding resources...");
                         if (hasManifest()) {
                             mAndrolib.decodeManifestWithResources(mApkFile, outDir, getResTable());
                         }
                         mAndrolib.decodeResourcesFull(mApkFile, outDir, getResTable());
+                        this.updateProgress(DecodeStep.DECODE_RESOURCES,DecodeState.DONE,0, "Decode res done");
                         break;
                 }
             } else {
                 // if there's no resources.arsc, decode the manifest without looking
                 // up attribute references
+                this.updateProgress(DecodeStep.DECODE_RESOURCES,DecodeState.NA,0,"Not decoding res");
                 if (hasManifest()) {
                     if (mDecodeResources == DECODE_RESOURCES_FULL
                             || mForceDecodeManifest == FORCE_DECODE_MANIFEST_FULL) {
@@ -126,15 +143,18 @@ public class ApkDecoder {
                     }
                 }
             }
-
+            this.updateProgress(DecodeStep.DECODE_SOURCES,DecodeState.PENDING,-1,"Start decompiling");
             if (hasSources()) {
                 switch (mDecodeSources) {
                     case DECODE_SOURCES_NONE:
+                        this.updateProgress(DecodeStep.DECODE_SOURCES,DecodeState.NA,-1,"Skip decompile");
                         mAndrolib.decodeSourcesRaw(mApkFile, outDir, "classes.dex");
                         break;
                     case DECODE_SOURCES_SMALI:
                     case DECODE_SOURCES_SMALI_ONLY_MAIN_CLASSES:
+                        this.updateProgress(DecodeStep.DECODE_SOURCES,DecodeState.INPROGRESS,0,"Start decompiling");
                         mAndrolib.decodeSourcesSmali(mApkFile, outDir, "classes.dex", mBakDeb, mApiLevel);
+                        this.updateProgress(DecodeStep.DECODE_SOURCES,DecodeState.DONE,100,"Decompile done");
                         break;
                 }
             }
@@ -142,15 +162,23 @@ public class ApkDecoder {
             if (hasMultipleSources()) {
                 // foreach unknown dex file in root, lets disassemble it
                 Set<String> files = mApkFile.getDirectory().getFiles(true);
+                this.updateProgress(DecodeStep.DECODE_SOURCES,DecodeState.INPROGRESS,0,"Start decompiling");
+                int finishedFileCount = 0;
+                long totalDexFileCount = 0;
+                for(String file : files){
+                    if(file.endsWith(".dex")) totalDexFileCount++;
+                }
                 for (String file : files) {
                     if (file.endsWith(".dex")) {
                         if (! file.equalsIgnoreCase("classes.dex")) {
                             switch(mDecodeSources) {
                                 case DECODE_SOURCES_NONE:
+                                    this.updateProgress(DecodeStep.DECODE_SOURCES,DecodeState.NA,-1,"Copying files");
                                     mAndrolib.decodeSourcesRaw(mApkFile, outDir, file);
                                     break;
                                 case DECODE_SOURCES_SMALI:
                                     mAndrolib.decodeSourcesSmali(mApkFile, outDir, file, mBakDeb, mApiLevel);
+                                    this.updateProgress(DecodeStep.DECODE_SOURCES,DecodeState.INPROGRESS, (int) (finishedFileCount*100./totalDexFileCount),"Decompiled "+file);
                                     break;
                                 case DECODE_SOURCES_SMALI_ONLY_MAIN_CLASSES:
                                     if (file.startsWith("classes") && file.endsWith(".dex")) {
@@ -158,19 +186,26 @@ public class ApkDecoder {
                                     } else {
                                         mAndrolib.decodeSourcesRaw(mApkFile, outDir, file);
                                     }
+                                    this.updateProgress(DecodeStep.DECODE_SOURCES,DecodeState.INPROGRESS, (int) (finishedFileCount*100./totalDexFileCount),"Decompiled "+file);
                                     break;
                             }
+                            finishedFileCount++;
                         }
                     }
                 }
+                this.updateProgress(DecodeStep.DECODE_SOURCES,DecodeState.DONE,100,"Done decompiling");
             }
-
+            this.updateProgress(DecodeStep.DECODE_OTHER_FILES,DecodeState.INPROGRESS,0,"Write raw files");
             mAndrolib.decodeRawFiles(mApkFile, outDir, mDecodeAssets);
+            this.updateProgress(DecodeStep.DECODE_OTHER_FILES,DecodeState.INPROGRESS,30,"Write unknown files");
             mAndrolib.decodeUnknownFiles(mApkFile, outDir);
+            this.updateProgress(DecodeStep.DECODE_OTHER_FILES,DecodeState.INPROGRESS,60,"Write original files");
             mUncompressedFiles = new ArrayList<>();
             mAndrolib.recordUncompressedFiles(mApkFile, mUncompressedFiles);
             mAndrolib.writeOriginalFiles(mApkFile, outDir);
+            this.updateProgress(DecodeStep.DECODE_OTHER_FILES,DecodeState.INPROGRESS,90,"Write meta files");
             writeMetaFile();
+            this.updateProgress(DecodeStep.DECODE_OTHER_FILES,DecodeState.DONE,100,"Done");
         } finally {
             try {
                 mApkFile.close();
@@ -450,6 +485,12 @@ public class ApkDecoder {
         }
     }
 
+    private void updateProgress(DecodeStep step, DecodeState state, int progress, String message){
+        if(decodeCallback != null){
+            decodeCallback.onDecodeProgress(step, state, progress, message);
+        }
+    }
+
     private final Androlib mAndrolib;
 
     private final static Logger LOGGER = Logger.getLogger(Androlib.class.getName());
@@ -457,6 +498,7 @@ public class ApkDecoder {
     private ExtFile mApkFile;
     private File mOutDir;
     private ResTable mResTable;
+    private IDecodeCallback decodeCallback;
     private short mDecodeSources = DECODE_SOURCES_SMALI;
     private short mDecodeResources = DECODE_RESOURCES_FULL;
     private short mForceDecodeManifest = FORCE_DECODE_MANIFEST_NONE;
