@@ -1024,9 +1024,9 @@ final public class AndrolibResources {
     private File getAaptBinaryFile() throws AndrolibException {
         try {
             if (getAaptVersion() == 2) {
-                return AaptManager.getAapt2();
+                return AaptManager.getAapt2(context);
             }
-            return AaptManager.getAapt1();
+            return AaptManager.getAapt1(context);
         } catch (BrutException ex) {
             throw new AndrolibException(ex);
         }

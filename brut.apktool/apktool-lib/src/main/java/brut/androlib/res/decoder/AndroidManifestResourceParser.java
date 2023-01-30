@@ -16,7 +16,7 @@
  */
 package brut.androlib.res.decoder;
 
-import android.util.TypedValue;
+import androidlib.util.TypedValue;
 
 import java.util.regex.Pattern;
 

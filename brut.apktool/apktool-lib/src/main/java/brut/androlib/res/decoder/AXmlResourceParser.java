@@ -16,8 +16,8 @@
  */
 package brut.androlib.res.decoder;
 
-import android.content.res.XmlResourceParser;
-import android.util.TypedValue;
+import androidlib.content.res.XmlResourceParser;
+import androidlib.util.TypedValue;
 import brut.androlib.AndrolibException;
 import brut.androlib.res.data.ResID;
 import brut.androlib.res.xml.ResXmlEncoders;

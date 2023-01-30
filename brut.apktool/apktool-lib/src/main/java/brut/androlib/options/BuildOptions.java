@@ -16,8 +16,6 @@
  */
 package brut.androlib.options;
 
-import android.util.IAssetsCallback;
-
 import java.util.Collection;
 
 public class BuildOptions {

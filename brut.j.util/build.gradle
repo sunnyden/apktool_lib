@@ -22,6 +22,11 @@ android{
     versionCode 1
     versionName "1.0.0"
   }
+  sourceSets{
+    main{
+      jniLibs.srcDirs = ['src/main/libs']
+    }
+  }
 }
 dependencies {
   implementation project(':apktool_lib:brut.j.common')

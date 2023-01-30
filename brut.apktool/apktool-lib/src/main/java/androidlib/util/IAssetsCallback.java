@@ -1,4 +1,4 @@
-package android.util;
+package androidlib.util;
 
 import java.io.InputStream;
 

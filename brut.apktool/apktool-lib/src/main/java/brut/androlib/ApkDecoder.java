@@ -17,7 +17,6 @@
 package brut.androlib;
 
 import android.content.Context;
-import android.util.IAssetsCallback;
 
 import brut.androlib.err.InFileNotFoundException;
 import brut.androlib.err.OutDirExistsException;

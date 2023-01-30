@@ -16,27 +16,32 @@
  */
 package brut.util;
 
+import android.content.Context;
+
 import brut.common.BrutException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AaptManager {
-    private static String execPath = "";
-    public static void setLibPath(String path){
-        execPath = path;
+
+    public static File getAapt2(Context context) throws BrutException {
+        return getAapt(2, context);
     }
 
-    public static File getAapt2() throws BrutException {
-        return getAapt(2);
+    public static File getAapt1(Context context) throws BrutException {
+        return getAapt(1, context);
     }
 
-    public static File getAapt1() throws BrutException {
-        return getAapt(1);
-    }
+    private static File getAapt(Integer version, Context context) throws BrutException {
+        try{
+            return new File(
+                    context.getPackageManager().getPackageInfo(context.getPackageName(),0)
+                            .applicationInfo.nativeLibraryDir+"/aapt"+version+"_exec.so");
+        }catch (Exception ex){
+            throw new BrutException("Failed to get aapt executable");
+        }
 
-    private static File getAapt(Integer version) throws BrutException {
-        return new File(execPath+"/aapt"+version+"_exec.so");
     }
 
     public static String getAaptExecutionCommand(String aaptPath, File aapt) throws BrutException {
