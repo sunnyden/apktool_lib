@@ -29,8 +29,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -441,15 +439,17 @@ public class BuildAndDecodeTest extends BaseTest {
         File control = new File((sTestOrigDir + location), "textfield_activated_holo_dark.9.png");
         File test = new File((sTestNewDir + location), "textfield_activated_holo_dark.9.png");
 
-        BufferedImage controlImage = ImageIO.read(control);
-        BufferedImage testImage = ImageIO.read(test);
+        Bitmap controlImage = BitmapFactory.decodeFile(control.getAbsolutePath());
+        Bitmap testImage = BitmapFactory.decodeFile(test.getAbsolutePath());
 
         // Check entire image as we cannot mess this up
         final int w = controlImage.getWidth(),
                   h = controlImage.getHeight();
 
-        final int[] controlImageGrid = controlImage.getRGB(0, 0, w, h, null, 0, w);
-        final int[] testImageGrid = testImage.getRGB(0, 0, w, h, null, 0, w);
+        final int[] controlImageGrid = new int[w*h];
+        final int[] testImageGrid = new int[w*h];
+        controlImage.getPixels(controlImageGrid, 0, w, 0, 0, w, h);
+        testImage.getPixels(testImageGrid, 0, w, 0, 0, w, h);
 
         for (int i = 0; i < controlImageGrid.length; i++) {
             assertEquals("Image lost Optical Bounds at i = " + i, controlImageGrid[i], testImageGrid[i]);
@@ -468,28 +468,28 @@ public class BuildAndDecodeTest extends BaseTest {
             File control = new File((sTestOrigDir + location), ninePatch);
             File test = new File((sTestNewDir + location), ninePatch);
 
-            BufferedImage controlImage = ImageIO.read(control);
-            BufferedImage testImage = ImageIO.read(test);
+            Bitmap controlImage = BitmapFactory.decodeFile(control.getAbsolutePath());
+            Bitmap testImage = BitmapFactory.decodeFile(test.getAbsolutePath());
 
             int w = controlImage.getWidth(), h = controlImage.getHeight();
 
             // Check the entire horizontal line
             for (int i = 1; i < w; i++) {
-                if (isTransparent(controlImage.getRGB(i, 0))) {
-                    assertTrue(isTransparent(testImage.getRGB(i, 0)));
+                if (isTransparent(controlImage.getPixel(i, 0))) {
+                    assertTrue(isTransparent(testImage.getPixel(i, 0)));
                 } else {
                     assertEquals("Image lost npTc chunk on image " + ninePatch + " at (x, y) (" + i + "," + 0 + ")",
-                            controlImage.getRGB(i, 0), testImage.getRGB(i, 0));
+                            controlImage.getPixel(i, 0), testImage.getPixel(i, 0));
                 }
             }
 
             // Check the entire vertical line
             for (int i = 1; i < h; i++) {
-                if (isTransparent(controlImage.getRGB(0, i))) {
-                    assertTrue(isTransparent(testImage.getRGB(0, i)));
+                if (isTransparent(controlImage.getPixel(0, i))) {
+                    assertTrue(isTransparent(testImage.getPixel(0, i)));
                 } else {
                     assertEquals("Image lost npTc chunk on image " + ninePatch + " at (x, y) (" + 0 + "," + i + ")",
-                            controlImage.getRGB(0, i), testImage.getRGB(0, i));
+                            controlImage.getPixel(0, i), testImage.getPixel(0, i));
                 }
             }
         }
