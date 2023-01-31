@@ -33,6 +33,8 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class ReferenceVersionCodeTest extends BaseTest {
 
     @BeforeClass
@@ -52,12 +54,12 @@ public class ReferenceVersionCodeTest extends BaseTest {
         String apk = "issue1234.apk";
 
         // decode issue1234.apk
-        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk));
+        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk), InstrumentationRegistry.getInstrumentation().getContext());
         ExtFile decodedApk = new ExtFile(sTmpDir + File.separator + apk + ".out");
         apkDecoder.setOutDir(new File(sTmpDir + File.separator + apk + ".out"));
         apkDecoder.decode();
 
-        MetaInfo metaInfo = new Androlib().readMetaFile(decodedApk);
+        MetaInfo metaInfo = new Androlib(InstrumentationRegistry.getInstrumentation().getContext()).readMetaFile(decodedApk);
         assertEquals("v1.0.0", metaInfo.versionInfo.versionName);
     }
 }

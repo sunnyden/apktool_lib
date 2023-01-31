@@ -33,6 +33,8 @@ import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class DexStaticFieldValueTest extends BaseTest {
 
     @BeforeClass
@@ -49,10 +51,10 @@ public class DexStaticFieldValueTest extends BaseTest {
 
         LOGGER.info("Building issue2543.apk...");
         File testApk = new File(sTmpDir, "issue2543.apk");
-        new Androlib(buildOptions).build(sTestOrigDir, testApk);
+        new Androlib(buildOptions, InstrumentationRegistry.getInstrumentation().getContext()).build(sTestOrigDir, testApk);
 
         LOGGER.info("Decoding issue2543.apk...");
-        ApkDecoder apkDecoder = new ApkDecoder(testApk);
+        ApkDecoder apkDecoder = new ApkDecoder(testApk, InstrumentationRegistry.getInstrumentation().getContext());
         apkDecoder.setOutDir(sTestNewDir);
         apkDecoder.setBaksmaliDebugMode(false);
         apkDecoder.decode();

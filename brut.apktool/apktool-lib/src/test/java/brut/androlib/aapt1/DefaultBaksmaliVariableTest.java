@@ -34,6 +34,8 @@ import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class DefaultBaksmaliVariableTest extends BaseTest {
 
     @BeforeClass
@@ -46,10 +48,10 @@ public class DefaultBaksmaliVariableTest extends BaseTest {
 
         LOGGER.info("Building issue1481.jar...");
         File testJar = new File(sTmpDir, "issue1481.jar");
-        new Androlib().build(sTestOrigDir, testJar);
+        new Androlib(InstrumentationRegistry.getInstrumentation().getContext()).build(sTestOrigDir, testJar);
 
         LOGGER.info("Decoding issue1481.jar...");
-        ApkDecoder apkDecoder = new ApkDecoder(testJar);
+        ApkDecoder apkDecoder = new ApkDecoder(testJar, InstrumentationRegistry.getInstrumentation().getContext());
         apkDecoder.setOutDir(sTestNewDir);
         apkDecoder.decode();
     }

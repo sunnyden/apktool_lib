@@ -32,6 +32,8 @@ import java.util.logging.Logger;
 
 import static org.junit.Assert.assertTrue;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class EmptyResourcesArscTest {
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -45,13 +47,13 @@ public class EmptyResourcesArscTest {
         File testApk = new File(sTestOrigDir, "issue1730.apk");
 
         LOGGER.info("Decoding issue1730.apk...");
-        ApkDecoder apkDecoder = new ApkDecoder(testApk);
+        ApkDecoder apkDecoder = new ApkDecoder(testApk, InstrumentationRegistry.getInstrumentation().getContext());
         apkDecoder.setOutDir(sTestNewDir);
         apkDecoder.decode();
 
         LOGGER.info("Building issue1730.apk...");
         BuildOptions buildOptions = new BuildOptions();
-        new Androlib(buildOptions).build(sTestNewDir, testApk);
+        new Androlib(buildOptions,InstrumentationRegistry.getInstrumentation().getContext()).build(sTestNewDir, testApk);
     }
 
     @AfterClass

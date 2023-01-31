@@ -28,6 +28,8 @@ import java.io.IOException;
 import org.junit.*;
 import static org.junit.Assert.*;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class AndResGuardTest extends BaseTest {
 
     @BeforeClass
@@ -47,7 +49,7 @@ public class AndResGuardTest extends BaseTest {
         String apk = "issue1170.apk";
 
         // decode issue1170.apk
-        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk));
+        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk), InstrumentationRegistry.getInstrumentation().getContext());
         sTestOrigDir = new ExtFile(sTmpDir + File.separator + apk + ".out");
 
         apkDecoder.setOutDir(new File(sTmpDir + File.separator + apk + ".out"));
@@ -60,7 +62,7 @@ public class AndResGuardTest extends BaseTest {
     @Test
     public void checkifAndResDecodeRemapsRFolderInRawMode() throws BrutException, IOException {
         String apk = "issue1170.apk";
-        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk));
+        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk),InstrumentationRegistry.getInstrumentation().getContext());
         sTestOrigDir = new ExtFile(sTmpDir + File.separator + apk + ".raw.out");
 
         apkDecoder.setOutDir(new File(sTmpDir + File.separator + apk + ".raw.out"));

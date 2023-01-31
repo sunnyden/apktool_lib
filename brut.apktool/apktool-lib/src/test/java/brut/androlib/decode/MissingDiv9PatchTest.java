@@ -26,11 +26,12 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.*;
 
 import static org.junit.Assert.*;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 public class MissingDiv9PatchTest extends BaseTest {
 
@@ -54,12 +55,12 @@ public class MissingDiv9PatchTest extends BaseTest {
         Res9patchStreamDecoder decoder = new Res9patchStreamDecoder();
         decoder.decode(inputStream, outputStream);
 
-        BufferedImage image = ImageIO.read(new ByteArrayInputStream(outputStream.toByteArray()));
+        Bitmap image = BitmapFactory.decodeStream(new ByteArrayInputStream(outputStream.toByteArray()));
         int height = image.getHeight() - 1;
 
         // First and last pixel will be invisible, so lets check the first column and ensure its all black
         for (int y = 1; y < height; y++) {
-            assertEquals("y coordinate failed at: " + y, NP_COLOR, image.getRGB(0, y));
+            assertEquals("y coordinate failed at: " + y, NP_COLOR, image.getPixel(0, y));
         }
 
     }

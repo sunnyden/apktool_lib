@@ -33,6 +33,8 @@ import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class MinifiedArscTest extends BaseTest {
 
     @BeforeClass
@@ -45,7 +47,7 @@ public class MinifiedArscTest extends BaseTest {
         sTestNewDir = new ExtFile(sTmpDir, "issue1157");
 
         // decode issue1157.apk
-        ApkDecoder apkDecoder = new ApkDecoder(new ExtFile(sTmpDir, apk));
+        ApkDecoder apkDecoder = new ApkDecoder(new ExtFile(sTmpDir, apk), InstrumentationRegistry.getInstrumentation().getContext());
         apkDecoder.setForceDelete(true);
         apkDecoder.setOutDir(sTestNewDir);
 

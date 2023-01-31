@@ -16,6 +16,8 @@
  */
 package brut.androlib.aapt1;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 import brut.androlib.Androlib;
 import brut.androlib.ApkDecoder;
 import brut.androlib.BaseTest;
@@ -47,7 +49,7 @@ public class LargeIntsInManifestTest extends BaseTest {
         String apk = "issue767.apk";
 
         // decode issue767.apk
-        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk));
+        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk), InstrumentationRegistry.getInstrumentation().getContext());
         sTestOrigDir = new ExtFile(sTmpDir + File.separator + apk + ".out");
 
         apkDecoder.setOutDir(new File(sTmpDir + File.separator + apk + ".out"));
@@ -55,11 +57,11 @@ public class LargeIntsInManifestTest extends BaseTest {
 
         // build issue767
         ExtFile testApk = new ExtFile(sTmpDir, apk + ".out");
-        new Androlib().build(testApk, null);
+        new Androlib(InstrumentationRegistry.getInstrumentation().getContext()).build(testApk, null);
         String newApk = apk + ".out" + File.separator + "dist" + File.separator + apk;
 
         // decode issue767 again
-        apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + newApk));
+        apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + newApk),InstrumentationRegistry.getInstrumentation().getContext());
         sTestNewDir = new ExtFile(sTmpDir + File.separator + apk + ".out.two");
 
         apkDecoder.setOutDir(new File(sTmpDir + File.separator + apk + ".out.two"));

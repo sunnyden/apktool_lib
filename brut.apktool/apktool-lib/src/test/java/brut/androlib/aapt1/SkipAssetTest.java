@@ -28,6 +28,8 @@ import java.io.IOException;
 import org.junit.*;
 import static org.junit.Assert.*;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class SkipAssetTest extends BaseTest {
 
     @BeforeClass
@@ -47,7 +49,7 @@ public class SkipAssetTest extends BaseTest {
         String apk = "issue1605.apk";
 
         // decode issue1605.apk
-        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk));
+        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk), InstrumentationRegistry.getInstrumentation().getContext());
         sTestOrigDir = new ExtFile(sTmpDir + File.separator + apk + ".out");
 
         apkDecoder.setOutDir(sTestOrigDir);
@@ -64,7 +66,7 @@ public class SkipAssetTest extends BaseTest {
         String apk = "issue1605.apk";
 
         // decode issue1605.apk
-        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk));
+        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk),InstrumentationRegistry.getInstrumentation().getContext());
         sTestOrigDir = new ExtFile(sTmpDir + File.separator + apk + ".out");
 
         apkDecoder.setOutDir(sTestOrigDir);

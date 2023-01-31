@@ -43,6 +43,8 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class NoNetworkConfigTest extends BaseTest {
 
     @BeforeClass
@@ -60,10 +62,10 @@ public class NoNetworkConfigTest extends BaseTest {
         buildOptions.netSecConf = true;
         buildOptions.useAapt2 = true;
         File testApk = new File(sTmpDir, "testapp.apk");
-        new Androlib(buildOptions).build(sTestOrigDir, testApk);
+        new Androlib(buildOptions, InstrumentationRegistry.getInstrumentation().getContext()).build(sTestOrigDir, testApk);
 
         LOGGER.info("Decoding testapp.apk...");
-        ApkDecoder apkDecoder = new ApkDecoder(testApk);
+        ApkDecoder apkDecoder = new ApkDecoder(testApk, InstrumentationRegistry.getInstrumentation().getContext());
         apkDecoder.setOutDir(sTestNewDir);
         apkDecoder.decode();
     }

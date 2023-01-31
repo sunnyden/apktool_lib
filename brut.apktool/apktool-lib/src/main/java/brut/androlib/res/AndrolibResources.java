@@ -1054,11 +1054,6 @@ final public class AndrolibResources {
         this.context = context;
     }
 
-    public AndrolibResources(){
-        // TODO: add stub for UT
-        this.context = null;
-    }
-
     public BuildOptions buildOptions;
 
     public Map<String, String> mResFileMapping = new HashMap();

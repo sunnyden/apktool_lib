@@ -29,6 +29,8 @@ import java.io.File;
 
 import static org.junit.Assert.assertTrue;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class AndroidOreoSparseTest extends BaseTest {
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -42,13 +44,13 @@ public class AndroidOreoSparseTest extends BaseTest {
         File testApk = new File(sTestOrigDir, "sparse.apk");
 
         LOGGER.info("Decoding sparse.apk...");
-        ApkDecoder apkDecoder = new ApkDecoder(testApk);
+        ApkDecoder apkDecoder = new ApkDecoder(testApk, InstrumentationRegistry.getInstrumentation().getContext());
         apkDecoder.setOutDir(sTestNewDir);
         apkDecoder.decode();
 
         LOGGER.info("Building sparse.apk...");
         BuildOptions buildOptions = new BuildOptions();
-        new Androlib(buildOptions).build(sTestNewDir, testApk);
+        new Androlib(buildOptions,InstrumentationRegistry.getInstrumentation().getContext()).build(sTestNewDir, testApk);
     }
 
     @AfterClass

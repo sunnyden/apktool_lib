@@ -34,11 +34,13 @@ import java.util.logging.Logger;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.*;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class BaseTest {
 
     protected void compareUnknownFiles() throws BrutException {
-        MetaInfo control = new Androlib().readMetaFile(sTestOrigDir);
-        MetaInfo test = new Androlib().readMetaFile(sTestNewDir);
+        MetaInfo control = new Androlib(InstrumentationRegistry.getInstrumentation().getContext()).readMetaFile(sTestOrigDir);
+        MetaInfo test = new Androlib(InstrumentationRegistry.getInstrumentation().getContext()).readMetaFile(sTestNewDir);
         assertNotNull(control.unknownFiles);
         assertNotNull(test.unknownFiles);
 

@@ -31,6 +31,8 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertTrue;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class VectorDrawableTest extends BaseTest {
 
     @BeforeClass
@@ -50,7 +52,7 @@ public class VectorDrawableTest extends BaseTest {
         String apk = "issue1456.apk";
 
         // decode issue1456.apk
-        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk));
+        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk), InstrumentationRegistry.getInstrumentation().getContext());
         sTestOrigDir = new ExtFile(sTmpDir + File.separator + apk + ".out");
 
         apkDecoder.setOutDir(new File(sTmpDir + File.separator + apk + ".out"));

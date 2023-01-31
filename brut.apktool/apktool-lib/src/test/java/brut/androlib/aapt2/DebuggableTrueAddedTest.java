@@ -35,6 +35,8 @@ import java.nio.file.Paths;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertTrue;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class DebuggableTrueAddedTest extends BaseTest {
 
     @BeforeClass
@@ -53,10 +55,10 @@ public class DebuggableTrueAddedTest extends BaseTest {
         buildOptions.verbose = true;
 
         File testApk = new File(sTmpDir, "issue2328-debuggable-missing.apk");
-        new Androlib(buildOptions).build(sTestOrigDir, testApk);
+        new Androlib(buildOptions, InstrumentationRegistry.getInstrumentation().getContext()).build(sTestOrigDir, testApk);
 
         LOGGER.info("Decoding issue2328-debuggable-missing.apk...");
-        ApkDecoder apkDecoder = new ApkDecoder(testApk);
+        ApkDecoder apkDecoder = new ApkDecoder(testApk, InstrumentationRegistry.getInstrumentation().getContext());
         apkDecoder.setOutDir(sTestNewDir);
         apkDecoder.decode();
     }

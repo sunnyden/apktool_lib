@@ -16,6 +16,8 @@
  */
 package brut.androlib.decode;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 import brut.androlib.*;
 import brut.androlib.options.BuildOptions;
 import brut.common.BrutException;
@@ -49,13 +51,13 @@ public class DuplicateDexTest extends BaseTest {
         File testApk = new File(sTestOrigDir, "duplicatedex.apk");
 
         LOGGER.info("Decoding duplicatedex.apk...");
-        ApkDecoder apkDecoder = new ApkDecoder(testApk);
+        ApkDecoder apkDecoder = new ApkDecoder(testApk, InstrumentationRegistry.getInstrumentation().getContext());
         apkDecoder.setOutDir(sTestNewDir);
         apkDecoder.decode();
 
         LOGGER.info("Building duplicatedex.apk...");
         BuildOptions buildOptions = new BuildOptions();
-        new Androlib(buildOptions).build(sTestNewDir, testApk);
+        new Androlib(buildOptions,InstrumentationRegistry.getInstrumentation().getContext()).build(sTestNewDir, testApk);
     }
 
     @Test
@@ -63,14 +65,14 @@ public class DuplicateDexTest extends BaseTest {
         File testApk = new File(sTestOrigDir, "duplicatedex.apk");
 
         LOGGER.info("Decoding duplicatedex.apk...");
-        ApkDecoder apkDecoder = new ApkDecoder(testApk);
+        ApkDecoder apkDecoder = new ApkDecoder(testApk,InstrumentationRegistry.getInstrumentation().getContext());
         apkDecoder.setDecodeSources(ApkDecoder.DECODE_SOURCES_SMALI_ONLY_MAIN_CLASSES);
         apkDecoder.setOutDir(sTestNewDir);
         apkDecoder.decode();
 
         LOGGER.info("Building duplicatedex.apk...");
         BuildOptions buildOptions = new BuildOptions();
-        new Androlib(buildOptions).build(sTestNewDir, testApk);
+        new Androlib(buildOptions,InstrumentationRegistry.getInstrumentation().getContext()).build(sTestNewDir, testApk);
     }
 
 }

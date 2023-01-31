@@ -16,6 +16,8 @@
  */
 package brut.androlib.decode;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 import brut.androlib.ApkDecoder;
 import brut.androlib.BaseTest;
 import brut.androlib.TestUtils;
@@ -48,7 +50,7 @@ public class ParentDirectoryTraversalTest extends BaseTest {
         String apk = "issue1498.apk";
 
         // decode issue1498.apk
-        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk));
+        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk), InstrumentationRegistry.getInstrumentation().getContext());
         apkDecoder.setDecodeResources(ApkDecoder.DECODE_RESOURCES_NONE);
 
         apkDecoder.setOutDir(new File(sTmpDir + File.separator + apk + ".out"));

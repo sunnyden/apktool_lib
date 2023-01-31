@@ -31,6 +31,8 @@ import java.io.IOException;
 
 import static org.junit.Assert.*;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class BuildAndDecodeTest extends BaseTest {
 
     @BeforeClass
@@ -49,10 +51,10 @@ public class BuildAndDecodeTest extends BaseTest {
 
         LOGGER.info("Building testapp.apk...");
         File testApk = new File(sTmpDir, "testapp.apk");
-        new Androlib(buildOptions).build(sTestOrigDir, testApk);
+        new Androlib(buildOptions, InstrumentationRegistry.getInstrumentation().getContext()).build(sTestOrigDir, testApk);
 
         LOGGER.info("Decoding testapp.apk...");
-        ApkDecoder apkDecoder = new ApkDecoder(testApk);
+        ApkDecoder apkDecoder = new ApkDecoder(testApk,InstrumentationRegistry.getInstrumentation().getContext());
         apkDecoder.setOutDir(sTestNewDir);
         apkDecoder.decode();
     }
@@ -79,13 +81,13 @@ public class BuildAndDecodeTest extends BaseTest {
 
     @Test
     public void confirmZeroByteFileExtensionIsNotStored() throws BrutException {
-        MetaInfo metaInfo = new Androlib().readMetaFile(sTestNewDir);
+        MetaInfo metaInfo = new Androlib(InstrumentationRegistry.getInstrumentation().getContext()).readMetaFile(sTestNewDir);
         assertFalse(metaInfo.doNotCompress.contains("jpg"));
     }
 
     @Test
     public void confirmZeroByteFileIsStored() throws BrutException {
-        MetaInfo metaInfo = new Androlib().readMetaFile(sTestNewDir);
+        MetaInfo metaInfo = new Androlib(InstrumentationRegistry.getInstrumentation().getContext()).readMetaFile(sTestNewDir);
         assertTrue(metaInfo.doNotCompress.contains("assets/0byte_file.jpg"));
     }
 

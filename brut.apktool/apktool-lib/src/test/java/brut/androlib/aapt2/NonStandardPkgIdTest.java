@@ -30,6 +30,8 @@ import java.io.File;
 
 import static org.junit.Assert.*;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class NonStandardPkgIdTest extends BaseTest {
 
     @BeforeClass
@@ -50,10 +52,10 @@ public class NonStandardPkgIdTest extends BaseTest {
 
         LOGGER.info("Building pkgid8.apk...");
         File testApk = new File(sTmpDir, "pkgid8.apk");
-        new Androlib(buildOptions).build(sTestOrigDir, testApk);
+        new Androlib(buildOptions, InstrumentationRegistry.getInstrumentation().getContext()).build(sTestOrigDir, testApk);
 
         LOGGER.info("Decoding pkgid8.apk...");
-        ApkDecoder apkDecoder = new ApkDecoder(testApk);
+        ApkDecoder apkDecoder = new ApkDecoder(testApk, InstrumentationRegistry.getInstrumentation().getContext());
         apkDecoder.setOutDir(sTestNewDir);
         apkDecoder.decode();
         mResTable = apkDecoder.getResTable();

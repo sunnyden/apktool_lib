@@ -35,6 +35,8 @@ import java.nio.file.Paths;
 import static org.junit.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class DebugTagRetainedTest extends BaseTest {
 
     @BeforeClass
@@ -51,10 +53,10 @@ public class DebugTagRetainedTest extends BaseTest {
         buildOptions.debugMode = true;
 
         File testApk = new File(sTmpDir, "issue1235.apk");
-        new Androlib(buildOptions).build(sTestOrigDir, testApk);
+        new Androlib(buildOptions,InstrumentationRegistry.getInstrumentation().getContext()).build(sTestOrigDir, testApk);
 
         LOGGER.info("Decoding issue1235.apk...");
-        ApkDecoder apkDecoder = new ApkDecoder(testApk);
+        ApkDecoder apkDecoder = new ApkDecoder(testApk,InstrumentationRegistry.getInstrumentation().getContext());
         apkDecoder.setOutDir(sTestNewDir);
         apkDecoder.decode();
     }

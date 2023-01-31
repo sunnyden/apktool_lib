@@ -32,6 +32,8 @@ import java.nio.file.Paths;
 
 import static org.junit.Assert.assertTrue;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class DecodeKotlinCoroutinesTest extends BaseTest {
     private static final String apk = "test-kotlin-coroutines.apk";
 
@@ -52,7 +54,7 @@ public class DecodeKotlinCoroutinesTest extends BaseTest {
     public void kotlinCoroutinesDecodeTest() throws IOException, AndrolibException, DirectoryException {
 
         // decode kotlin coroutines
-        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk));
+        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk), InstrumentationRegistry.getInstrumentation().getContext());
         apkDecoder.setOutDir(new File(sTmpDir + File.separator + apk + ".out"));
         apkDecoder.setForceDelete(true);
         apkDecoder.decode();
@@ -67,19 +69,19 @@ public class DecodeKotlinCoroutinesTest extends BaseTest {
     public void kotlinCoroutinesEncodeAfterDecodeTest() throws IOException, BrutException {
 
         // decode kotlin coroutines
-        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk));
+        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk),InstrumentationRegistry.getInstrumentation().getContext());
         apkDecoder.setOutDir(new File(sTmpDir + File.separator + apk + ".out"));
         apkDecoder.setForceDelete(true);
         apkDecoder.decode();
 
         // build kotlin coroutines
         ExtFile testApk = new ExtFile(sTmpDir, apk + ".out");
-        new Androlib().build(testApk, null);
+        new Androlib(InstrumentationRegistry.getInstrumentation().getContext()).build(testApk, null);
         String newApk = apk + ".out" + File.separator + "dist" + File.separator + apk;
         assertTrue(fileExists(newApk));
 
         // decode kotlin coroutines again
-        apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + newApk));
+        apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + newApk),InstrumentationRegistry.getInstrumentation().getContext());
         apkDecoder.setOutDir(new File(sTmpDir + File.separator + apk + ".out.two"));
         apkDecoder.setForceDelete(true);
         apkDecoder.decode();

@@ -37,6 +37,8 @@ import java.nio.file.Paths;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertTrue;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class ProviderAttributeTest extends BaseTest {
 
     @BeforeClass
@@ -56,18 +58,18 @@ public class ProviderAttributeTest extends BaseTest {
         String apk = "issue636.apk";
 
         // decode issue636.apk
-        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk));
+        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk), InstrumentationRegistry.getInstrumentation().getContext());
         apkDecoder.setOutDir(new File(sTmpDir + File.separator + apk + ".out"));
         apkDecoder.decode();
 
         // build issue636
         ExtFile testApk = new ExtFile(sTmpDir, apk + ".out");
-        new Androlib().build(testApk, null);
+        new Androlib(InstrumentationRegistry.getInstrumentation().getContext()).build(testApk, null);
         String newApk = apk + ".out" + File.separator + "dist" + File.separator + apk;
         assertTrue(fileExists(newApk));
 
         // decode issues636 again
-        apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + newApk));
+        apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + newApk),InstrumentationRegistry.getInstrumentation().getContext());
         apkDecoder.setOutDir(new File(sTmpDir + File.separator + apk + ".out.two"));
         apkDecoder.decode();
 

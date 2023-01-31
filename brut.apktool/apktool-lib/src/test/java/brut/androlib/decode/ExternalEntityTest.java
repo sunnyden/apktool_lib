@@ -34,6 +34,8 @@ import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class ExternalEntityTest extends BaseTest {
 
     @BeforeClass
@@ -43,10 +45,10 @@ public class ExternalEntityTest extends BaseTest {
 
         LOGGER.info("Building doctype.apk...");
         File testApk = new File(sTestOrigDir, "doctype.apk");
-        new Androlib().build(sTestOrigDir, testApk);
+        new Androlib(InstrumentationRegistry.getInstrumentation().getContext()).build(sTestOrigDir, testApk);
 
         LOGGER.info("Decoding doctype.apk...");
-        ApkDecoder apkDecoder = new ApkDecoder(testApk);
+        ApkDecoder apkDecoder = new ApkDecoder(testApk, InstrumentationRegistry.getInstrumentation().getContext());
         apkDecoder.setOutDir(new File(sTestOrigDir + File.separator + "output"));
         apkDecoder.decode();
     }

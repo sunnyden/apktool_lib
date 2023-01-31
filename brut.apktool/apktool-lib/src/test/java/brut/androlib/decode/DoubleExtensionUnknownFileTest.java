@@ -34,6 +34,8 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertTrue;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class DoubleExtensionUnknownFileTest extends BaseTest {
 
     @BeforeClass
@@ -53,12 +55,12 @@ public class DoubleExtensionUnknownFileTest extends BaseTest {
         String apk = "issue1244.apk";
 
         // decode issue1244.apk
-        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk));
+        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk), InstrumentationRegistry.getInstrumentation().getContext());
         ExtFile decodedApk = new ExtFile(sTmpDir + File.separator + apk + ".out");
         apkDecoder.setOutDir(new File(sTmpDir + File.separator + apk + ".out"));
         apkDecoder.decode();
 
-        MetaInfo metaInfo = new Androlib().readMetaFile(decodedApk);
+        MetaInfo metaInfo = new Androlib(InstrumentationRegistry.getInstrumentation().getContext()).readMetaFile(decodedApk);
         for (String string : metaInfo.doNotCompress) {
             if (StringUtils.countMatches(string, ".") > 1) {
                 assertTrue(string.equalsIgnoreCase("assets/bin/Data/sharedassets1.assets.split0"));

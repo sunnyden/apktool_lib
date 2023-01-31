@@ -32,6 +32,8 @@ import java.nio.file.Paths;
 
 import static org.junit.Assert.assertTrue;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class SharedLibraryTest extends BaseTest {
 
     @BeforeClass
@@ -54,7 +56,7 @@ public class SharedLibraryTest extends BaseTest {
         buildOptions.frameworkFolderLocation = sTmpDir.getAbsolutePath();
         buildOptions.frameworkTag = "building";
 
-        new Androlib(buildOptions).installFramework(new File(sTmpDir + File.separator + apkName));
+        new Androlib(buildOptions, InstrumentationRegistry.getInstrumentation().getContext()).installFramework(new File(sTmpDir + File.separator + apkName));
 
         assertTrue(fileExists("2-building.apk"));
     }
@@ -66,7 +68,7 @@ public class SharedLibraryTest extends BaseTest {
         BuildOptions buildOptions = new BuildOptions();
         buildOptions.frameworkFolderLocation = sTmpDir.getAbsolutePath();
 
-        new Androlib(buildOptions).installFramework(new File(sTmpDir + File.separator + apkName));
+        new Androlib(buildOptions,InstrumentationRegistry.getInstrumentation().getContext()).installFramework(new File(sTmpDir + File.separator + apkName));
 
         assertTrue(fileExists("2.apk"));
     }
@@ -82,18 +84,18 @@ public class SharedLibraryTest extends BaseTest {
         buildOptions.frameworkTag = "shared";
 
         // install library/framework
-        new Androlib(buildOptions).installFramework(new File(sTmpDir + File.separator + library));
+        new Androlib(buildOptions,InstrumentationRegistry.getInstrumentation().getContext()).installFramework(new File(sTmpDir + File.separator + library));
         assertTrue(fileExists("2-shared.apk"));
 
         // decode client.apk
-        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + client));
+        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + client),InstrumentationRegistry.getInstrumentation().getContext());
         apkDecoder.setOutDir(new File(sTmpDir + File.separator + client + ".out"));
         apkDecoder.setFrameworkDir(buildOptions.frameworkFolderLocation);
         apkDecoder.setFrameworkTag(buildOptions.frameworkTag);
         apkDecoder.decode();
 
         // decode library.apk
-        ApkDecoder libraryDecoder = new ApkDecoder(new File(sTmpDir + File.separator + library));
+        ApkDecoder libraryDecoder = new ApkDecoder(new File(sTmpDir + File.separator + library),InstrumentationRegistry.getInstrumentation().getContext());
         libraryDecoder.setOutDir(new File(sTmpDir + File.separator + library + ".out"));
         libraryDecoder.setFrameworkDir(buildOptions.frameworkFolderLocation);
         libraryDecoder.setFrameworkTag(buildOptions.frameworkTag);
@@ -101,12 +103,12 @@ public class SharedLibraryTest extends BaseTest {
 
         // build client.apk
         ExtFile clientApk = new ExtFile(sTmpDir, client + ".out");
-        new Androlib(buildOptions).build(clientApk, null);
+        new Androlib(buildOptions,InstrumentationRegistry.getInstrumentation().getContext()).build(clientApk, null);
         assertTrue(fileExists(client + ".out" + File.separator + "dist" + File.separator + client));
 
         // build library.apk (shared library)
         ExtFile libraryApk = new ExtFile(sTmpDir, library + ".out");
-        new Androlib(buildOptions).build(libraryApk, null);
+        new Androlib(buildOptions,InstrumentationRegistry.getInstrumentation().getContext()).build(libraryApk, null);
         assertTrue(fileExists(library + ".out" + File.separator + "dist" + File.separator + library));
     }
 

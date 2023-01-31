@@ -23,11 +23,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import static org.junit.Assert.assertEquals;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class InvalidSdkBoundingTest extends BaseTest {
 
     @Test
     public void checkIfInvalidValuesPass() {
-        AndrolibResources androlibResources = new AndrolibResources();
+        AndrolibResources androlibResources = new AndrolibResources(InstrumentationRegistry.getInstrumentation().getContext());
 
         Map<String, String> sdkInfo = new LinkedHashMap<>();
         sdkInfo.put("minSdkVersion", "15");
@@ -40,7 +42,7 @@ public class InvalidSdkBoundingTest extends BaseTest {
 
     @Test
     public void checkIfMissingMinPasses() {
-        AndrolibResources androlibResources = new AndrolibResources();
+        AndrolibResources androlibResources = new AndrolibResources(InstrumentationRegistry.getInstrumentation().getContext());
 
         Map<String, String> sdkInfo = new LinkedHashMap<>();
         sdkInfo.put("targetSdkVersion", "25");
@@ -52,7 +54,7 @@ public class InvalidSdkBoundingTest extends BaseTest {
 
     @Test
     public void checkIfMissingMaxPasses() {
-        AndrolibResources androlibResources = new AndrolibResources();
+        AndrolibResources androlibResources = new AndrolibResources(InstrumentationRegistry.getInstrumentation().getContext());
 
         Map<String, String> sdkInfo = new LinkedHashMap<>();
         sdkInfo.put("minSdkVersion", "15");
@@ -64,7 +66,7 @@ public class InvalidSdkBoundingTest extends BaseTest {
 
     @Test
     public void checkIfMissingBothPasses() {
-        AndrolibResources androlibResources = new AndrolibResources();
+        AndrolibResources androlibResources = new AndrolibResources(InstrumentationRegistry.getInstrumentation().getContext());
 
         Map<String, String> sdkInfo = new LinkedHashMap<>();
         sdkInfo.put("targetSdkVersion", "25");
@@ -75,7 +77,7 @@ public class InvalidSdkBoundingTest extends BaseTest {
 
     @Test
     public void checkForShortHandSTag() {
-        AndrolibResources androlibResources = new AndrolibResources();
+        AndrolibResources androlibResources = new AndrolibResources(InstrumentationRegistry.getInstrumentation().getContext());
 
         Map<String, String> sdkInfo = new LinkedHashMap<>();
         sdkInfo.put("targetSdkVersion", "S");
@@ -86,7 +88,7 @@ public class InvalidSdkBoundingTest extends BaseTest {
 
     @Test
     public void checkForShortHandSdkTag() {
-        AndrolibResources androlibResources = new AndrolibResources();
+        AndrolibResources androlibResources = new AndrolibResources(InstrumentationRegistry.getInstrumentation().getContext());
 
         Map<String, String> sdkInfo = new LinkedHashMap<>();
         sdkInfo.put("targetSdkVersion", "O");
@@ -97,7 +99,7 @@ public class InvalidSdkBoundingTest extends BaseTest {
 
     @Test
     public void checkForSdkDevelopmentInsaneTestValue() {
-        AndrolibResources androlibResources = new AndrolibResources();
+        AndrolibResources androlibResources = new AndrolibResources(InstrumentationRegistry.getInstrumentation().getContext());
 
         Map<String, String> sdkInfo = new LinkedHashMap<>();
         sdkInfo.put("targetSdkVersion", "T");

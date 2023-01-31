@@ -32,6 +32,8 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertTrue;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class DecodeKotlinTest extends BaseTest {
 
     @BeforeClass
@@ -43,7 +45,7 @@ public class DecodeKotlinTest extends BaseTest {
         String apk = "testkotlin.apk";
 
         // decode testkotlin.apk
-        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk));
+        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk), InstrumentationRegistry.getInstrumentation().getContext());
         sTestNewDir = new ExtFile(sTmpDir + File.separator + apk + ".out");
 
         apkDecoder.setOutDir(new File(sTmpDir + File.separator + apk + ".out"));

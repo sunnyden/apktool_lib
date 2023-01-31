@@ -33,6 +33,8 @@ import java.io.File;
 
 import static junit.framework.Assert.assertTrue;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class DecodeArrayTest extends BaseTest {
 
     @BeforeClass
@@ -50,7 +52,7 @@ public class DecodeArrayTest extends BaseTest {
     @Test
     public void decodeStringArray() throws BrutException {
         String apk = "issue1994.apk";
-        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk));
+        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk),InstrumentationRegistry.getInstrumentation().getContext());
 
         ResTable resTable = apkDecoder.getResTable();
         ResValue value = resTable.getResSpec(0x7f020001).getDefaultResource().getValue();
@@ -61,7 +63,7 @@ public class DecodeArrayTest extends BaseTest {
     @Test
     public void decodeArray() throws BrutException {
         String apk = "issue1994.apk";
-        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk));
+        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk),InstrumentationRegistry.getInstrumentation().getContext());
 
         ResTable resTable = apkDecoder.getResTable();
         ResValue value = resTable.getResSpec(0x7f020000).getDefaultResource().getValue();

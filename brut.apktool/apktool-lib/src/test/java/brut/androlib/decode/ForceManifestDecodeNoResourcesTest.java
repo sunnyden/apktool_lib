@@ -32,6 +32,8 @@ import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class ForceManifestDecodeNoResourcesTest extends BaseTest {
 
     private final byte[] xmlHeader = new byte[] {
@@ -133,7 +135,7 @@ public class ForceManifestDecodeNoResourcesTest extends BaseTest {
 
     private void decodeFile(String apk, short decodeResources, short decodeManifest, String output)
             throws BrutException, IOException {
-        ApkDecoder apkDecoder = new ApkDecoder(new File(apk));
+        ApkDecoder apkDecoder = new ApkDecoder(new File(apk), InstrumentationRegistry.getInstrumentation().getContext());
         apkDecoder.setDecodeResources(decodeResources);
         apkDecoder.setForceDecodeManifest(decodeManifest);
         apkDecoder.setForceDelete(true); // delete directory due to multiple tests.

@@ -31,6 +31,8 @@ import java.io.File;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class OutsideOfDirectoryEntryTest extends BaseTest {
 
     @BeforeClass
@@ -42,7 +44,7 @@ public class OutsideOfDirectoryEntryTest extends BaseTest {
         String apk = "issue1589.apk";
 
         // decode issue1589.apk
-        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk));
+        ApkDecoder apkDecoder = new ApkDecoder(new File(sTmpDir + File.separator + apk), InstrumentationRegistry.getInstrumentation().getContext());
         sTestNewDir = new ExtFile(sTmpDir + File.separator + apk + ".out");
 
         apkDecoder.setOutDir(new File(sTmpDir + File.separator + apk + ".out"));

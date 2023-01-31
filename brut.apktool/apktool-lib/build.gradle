@@ -41,6 +41,7 @@ dependencies {
 
     testImplementation depends.junit
     testImplementation depends.xmlunit
+    testImplementation 'androidx.test:monitor:1.4.0'
 }
 
 task wrapper(type: Wrapper){

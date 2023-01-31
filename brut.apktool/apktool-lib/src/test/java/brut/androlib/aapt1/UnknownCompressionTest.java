@@ -31,6 +31,8 @@ import java.io.IOException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class UnknownCompressionTest extends BaseTest {
 
     @BeforeClass
@@ -46,13 +48,13 @@ public class UnknownCompressionTest extends BaseTest {
         sTestOrigDir = new ExtFile(sTmpDir, apk);
 
         // decode deflated_unknowns.apk
-        ApkDecoder apkDecoder = new ApkDecoder(sTestOrigDir);
+        ApkDecoder apkDecoder = new ApkDecoder(sTestOrigDir, InstrumentationRegistry.getInstrumentation().getContext());
         apkDecoder.setOutDir(new File(sTestOrigDir.getAbsolutePath() + ".out"));
         apkDecoder.decode();
 
         // build deflated_unknowns
         ExtFile clientApkFolder = new ExtFile(sTestOrigDir.getAbsolutePath() + ".out");
-        new Androlib(buildOptions).build(clientApkFolder, null);
+        new Androlib(buildOptions,InstrumentationRegistry.getInstrumentation().getContext()).build(clientApkFolder, null);
         sTestNewDir = new ExtFile(clientApkFolder, "dist" + File.separator + apk);
     }
 

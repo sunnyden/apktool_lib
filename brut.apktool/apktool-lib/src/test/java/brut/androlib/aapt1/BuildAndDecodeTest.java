@@ -38,6 +38,11 @@ import java.util.Map;
 import static org.junit.Assert.*;
 import static org.junit.Assume.assumeTrue;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class BuildAndDecodeTest extends BaseTest {
 
     @BeforeClass
@@ -52,10 +57,10 @@ public class BuildAndDecodeTest extends BaseTest {
 
         LOGGER.info("Building testapp.apk...");
         File testApk = new File(sTmpDir, "testapp.apk");
-        new Androlib().build(sTestOrigDir, testApk);
+        new Androlib(InstrumentationRegistry.getInstrumentation().getContext()).build(sTestOrigDir, testApk);
 
         LOGGER.info("Decoding testapp.apk...");
-        ApkDecoder apkDecoder = new ApkDecoder(testApk);
+        ApkDecoder apkDecoder = new ApkDecoder(testApk,InstrumentationRegistry.getInstrumentation().getContext());
         apkDecoder.setOutDir(sTestNewDir);
         apkDecoder.decode();
     }
@@ -394,17 +399,17 @@ public class BuildAndDecodeTest extends BaseTest {
         File control = new File((sTestOrigDir + location), "9patch.9.png");
         File test =  new File((sTestNewDir + location), "9patch.9.png");
 
-        BufferedImage controlImage = ImageIO.read(control);
-        BufferedImage testImage = ImageIO.read(test);
+        Bitmap controlImage = BitmapFactory.decodeFile(control.getAbsolutePath());
+        Bitmap testImage = BitmapFactory.decodeFile(test.getAbsolutePath());
 
         // lets start with 0,0 - empty
-        assertEquals(controlImage.getRGB(0, 0), testImage.getRGB(0, 0));
+        assertEquals(controlImage.getPixel(0, 0), testImage.getPixel(0, 0));
 
         // then with 30, 0 - black
-        assertEquals(controlImage.getRGB(30, 0), testImage.getRGB(30, 0));
+        assertEquals(controlImage.getPixel(30, 0), testImage.getPixel(30, 0));
 
         // then 30, 30 - blue
-        assertEquals(controlImage.getRGB(30, 30), testImage.getRGB(30, 30));
+        assertEquals(controlImage.getPixel(30, 30), testImage.getPixel(30, 30));
     }
 
     @Test
@@ -415,17 +420,17 @@ public class BuildAndDecodeTest extends BaseTest {
         File control = new File((sTestOrigDir + location), "btn_zoom_up_normal.9.png");
         File test = new File((sTestNewDir + location), "btn_zoom_up_normal.9.png");
 
-        BufferedImage controlImage = ImageIO.read(control);
-        BufferedImage testImage = ImageIO.read(test);
+        Bitmap controlImage = BitmapFactory.decodeFile(control.getAbsolutePath());
+        Bitmap testImage = BitmapFactory.decodeFile(test.getAbsolutePath());
 
         // 0, 0 = clear
-        assertEquals(controlImage.getRGB(0, 0), testImage.getRGB(0, 0));
+        assertEquals(controlImage.getPixel(0, 0), testImage.getPixel(0, 0));
 
         // 30, 0 = black line
-        assertEquals(controlImage.getRGB(0, 30), testImage.getRGB(0, 30));
+        assertEquals(controlImage.getPixel(0, 30), testImage.getPixel(0, 30));
 
         // 30, 30 = greyish button
-        assertEquals(controlImage.getRGB(30, 30), testImage.getRGB(30, 30));
+        assertEquals(controlImage.getPixel(30, 30), testImage.getPixel(30, 30));
     }
 
     @Test
@@ -492,7 +497,7 @@ public class BuildAndDecodeTest extends BaseTest {
 
     @Test
     public void confirmZeroByteFileExtensionIsNotStored() throws BrutException {
-        MetaInfo metaInfo = new Androlib().readMetaFile(sTestNewDir);
+        MetaInfo metaInfo = new Androlib(InstrumentationRegistry.getInstrumentation().getContext()).readMetaFile(sTestNewDir);
 
         for (String item : metaInfo.doNotCompress) {
             assertNotEquals("jpg", item);
@@ -501,7 +506,7 @@ public class BuildAndDecodeTest extends BaseTest {
 
     @Test
     public void confirmZeroByteFileIsStored() throws BrutException {
-        MetaInfo metaInfo = new Androlib().readMetaFile(sTestNewDir);
+        MetaInfo metaInfo = new Androlib(InstrumentationRegistry.getInstrumentation().getContext()).readMetaFile(sTestNewDir);
         assertTrue(metaInfo.doNotCompress.contains("assets/0byte_file.jpg"));
     }
 

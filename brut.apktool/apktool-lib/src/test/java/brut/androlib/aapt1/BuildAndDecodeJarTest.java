@@ -31,6 +31,8 @@ import java.io.File;
 
 import static org.junit.Assert.assertTrue;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 public class BuildAndDecodeJarTest extends BaseTest {
 
     @BeforeClass
@@ -44,10 +46,10 @@ public class BuildAndDecodeJarTest extends BaseTest {
 
         LOGGER.info("Building testjar.jar...");
         File testJar = new File(sTmpDir, "testjar.jar");
-        new Androlib().build(sTestOrigDir, testJar);
+        new Androlib(InstrumentationRegistry.getInstrumentation().getContext()).build(sTestOrigDir, testJar);
 
         LOGGER.info("Decoding testjar.jar...");
-        ApkDecoder apkDecoder = new ApkDecoder(testJar);
+        ApkDecoder apkDecoder = new ApkDecoder(testJar, InstrumentationRegistry.getInstrumentation().getContext());
         apkDecoder.setOutDir(sTestNewDir);
         apkDecoder.decode();
     }
